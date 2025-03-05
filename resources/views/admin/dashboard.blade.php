@@ -154,52 +154,87 @@
   </div>
 </div>
 
-<div class="card">
-  <div class="card-header pb-0">
-    <h6>Student List</h6>
+<!-- Replace the existing Student List card with this enhanced version -->
+<div class="card mb-4 shadow-sm border-0 rounded-3">
+  <div class="card-header pb-0 bg-white">
+    <div class="row align-items-center">
+      <div class="col">
+        <h6 class="mb-0 text-primary fw-bold py-1">
+          <i class="fas fa-user-graduate me-2"></i>Student Performance
+        </h6>
+      </div>
+      <div class="col text-end">
+        <a href="{{ route('admin.students.index') }}" class="btn btn-primary btn-sm rounded-pill shadow-sm">
+          <i class="fas fa-users me-1"></i> View All Students
+        </a>
+      </div>
+    </div>
   </div>
-  <div class="table-responsive">
-    <table class="table align-items-center mb-0">
-      <thead>
-        <tr>
-          <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Student</th>
-          <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Student ID</th>
-          <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Course</th>
-          <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">GWA</th>
-        </tr>
-      </thead>
-      <tbody>
-        @foreach($topStudents as $student)
-        <tr>
-          <td>
-            <div class="d-flex px-2 py-1">
-              <div class="d-flex flex-column justify-content-center">
-                <h6 class="mb-0 text-xs">{{ $student->name }}</h6>
-                <p class="text-xs text-secondary mb-0">{{ $student->email }}</p>
+  
+  <div class="card-body px-0 pt-3 pb-2">
+    <div class="table-responsive p-0">
+      <table class="table align-items-center mb-0">
+        <thead>
+          <tr>
+            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-3">Student</th>
+            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-3">Student ID</th>
+            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-3">Course</th>
+            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-3">GWA</th>
+          </tr>
+        </thead>
+        <tbody>
+          @forelse($topStudents as $student)
+          <tr>
+            <td>
+              <div class="d-flex px-2 py-1">
+                <div class="avatar avatar-sm me-3 bg-primary-subtle rounded-circle">
+                  <i class="fas fa-user text-primary position-absolute top-50 start-50 translate-middle"></i>
+                </div>
+                <div class="d-flex flex-column justify-content-center">
+                  <h6 class="mb-0 text-sm">{{ $student->name }}</h6>
+                  <p class="text-xs text-secondary mb-0">{{ $student->email }}</p>
+                </div>
               </div>
-            </div>
-          </td>
-          <td class="align-middle text-center">
-            <span class="text-secondary text-xs font-weight-bold">{{ $student->student_id }}</span>
-          </td>
-          <td class="align-middle text-center">
-            <span class="text-secondary text-xs font-weight-bold">{{ $student->course }}</span>
-          </td>
-          <td class="align-middle text-center">
-            <span class="text-secondary text-xs font-weight-bold">{{ $student->gwa > 0 ? $student->gwa : 'N/A' }}</span>
-          </td>
-        </tr>
-        @endforeach
-        
-        @if($topStudents->isEmpty())
-        <tr>
-          <td colspan="4" class="text-center">
-            <p class="text-xs">No student data available</p>
-          </td>
-        </tr>
-        @endif
-      </tbody>
-    </table>
+            </td>
+            <td>
+              <p class="text-sm font-weight-bold mb-0 ps-3">{{ $student->student_id }}</p>
+            </td>
+            <td>
+              <span class="badge bg-info-subtle text-info py-2 px-3">{{ $student->course }}</span>
+            </td>
+            <td>
+              @if($student->gwa > 0)
+                <span class="badge bg-{{ $student->gwa <= 1.75 ? 'success' : ($student->gwa <= 2.5 ? 'primary' : 'warning') }}-subtle 
+                      text-{{ $student->gwa <= 1.75 ? 'success' : ($student->gwa <= 2.5 ? 'primary' : 'warning') }} py-2 px-3">
+                  {{ $student->gwa }}
+                </span>
+              @else
+                <span class="badge bg-secondary-subtle text-secondary py-2 px-3">N/A</span>
+              @endif
+            </td>
+          </tr>
+          @empty
+          <tr>
+            <td colspan="4" class="text-center py-4">
+              <div class="d-flex flex-column align-items-center">
+                <i class="fas fa-chart-line fa-3x text-secondary opacity-50 mb-3"></i>
+                <h6 class="text-secondary">No student performance data available</h6>
+                <p class="text-xs text-secondary">Student GWA will appear here once grades are recorded</p>
+              </div>
+            </td>
+          </tr>
+          @endforelse
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="px-3 py-3">
+      <div class="d-flex justify-content-between align-items-center">
+        <div class="text-secondary text-xs">
+          <i class="fas fa-info-circle me-1"></i> Showing top {{ $topStudents->count() }} students sorted by GWA
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 

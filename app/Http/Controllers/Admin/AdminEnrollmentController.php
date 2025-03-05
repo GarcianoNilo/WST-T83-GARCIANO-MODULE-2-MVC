@@ -14,7 +14,7 @@ class AdminEnrollmentController extends Controller
     {
         $students = User::where('role', 'student')->get();
         $subjects = Subject::all();
-        $enrollments = Enrollment::with(['student', 'subject'])->get();
+        $enrollments = Enrollment::with(['student', 'subject'])->paginate(8);
         return view('admin.enrollments.index', compact('enrollments', 'students', 'subjects'));
     }
 

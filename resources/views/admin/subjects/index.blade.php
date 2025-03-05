@@ -3,29 +3,58 @@
 @section('title', 'Manage Subjects')
 
 @section('content')
-<!-- Add error/success messages -->
-@if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        {{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+<!-- Toast Notification System -->
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 1080">
+    <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header" id="toastHeader">
+            <i class="fas fa-info-circle me-2" id="toastIcon"></i>
+            <strong class="me-auto" id="toastTitle">Notification</strong>
+            <small>Just now</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toastMessage">
+            Action completed successfully
+        </div>
     </div>
-@endif
+</div>
 
-@if(session('error'))
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        {{ session('error') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-@endif
+<!-- Session Messages -->
+@if(session('success') || session('error') || $errors->any())
+    <div class="row">
+        <div class="col-12">
+            @if(session('success'))
+                <div class="alert alert-success alert-dismissible fade show d-flex align-items-center shadow-sm" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <div>{{ session('success') }}</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
 
-@if($errors->any())
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <ul class="mb-0">
-            @foreach($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            @if(session('error'))
+                <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center shadow-sm" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <div>{{ session('error') }}</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
+            @if($errors->any())
+                <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+                    <div class="d-flex">
+                        <i class="fas fa-exclamation-circle me-2 mt-1"></i>
+                        <div>
+                            <strong>Please check the form for errors:</strong>
+                            <ul class="mb-0 mt-1 ps-3">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+        </div>
     </div>
 @endif
 
@@ -177,63 +206,96 @@
         </div>
 
         <!-- Main Content -->
-        <div class="card mb-4 shadow-sm">
-            <div class="card-header pb-0 d-flex justify-content-between align-items-center">
-                <h6 class="mb-0 py-1">Manage Subjects</h6>
-                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addSubjectModal">
-                    <i class="fas fa-plus me-1"></i> Add New Subject
-                </button>
+        <div class="card mb-4 shadow-sm border-0 rounded-3">
+            <div class="card-header pb-0 bg-white">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h6 class="mb-0 text-primary fw-bold py-1">
+                            <i class="fas fa-book me-2"></i>Subject Management
+                        </h6>
+                    </div>
+                    <div class="col text-end">
+                        <button class="btn btn-primary btn-sm rounded-pill shadow-sm" data-bs-toggle="modal" data-bs-target="#addSubjectModal">
+                            <i class="fas fa-plus-circle me-1"></i> Add New Subject
+                        </button>
+                    </div>
+                </div>
             </div>
-            <div class="card-body px-0 pt-0 pb-2">
+            <div class="card-body px-0 pt-3 pb-2">
                 <div class="table-responsive p-0">
                     <table class="table align-items-center mb-0">
                         <thead>
                             <tr>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Code</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Name</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Units</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Course</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Year Level</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Actions</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-3">Code</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-3">Name</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-3">Units</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-3">Course</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-3">Year Level</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-3">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($subjects as $subject)
+                            @forelse($subjects as $subject)
                             <tr>
                                 <td>
-                                    <p class="text-xs font-weight-bold mb-0 px-2 py-2">{{ $subject->code }}</p>
+                                    <p class="text-xs font-weight-bold mb-0 ps-3 py-3">{{ $subject->code }}</p>
                                 </td>
                                 <td>
-                                    <p class="text-xs font-weight-bold mb-0 px-2 py-2">{{ $subject->name }}</p>
+                                    <p class="text-xs font-weight-bold mb-0 ps-3 py-3">{{ $subject->name }}</p>
                                 </td>
                                 <td>
-                                    <p class="text-xs font-weight-bold mb-0 px-2 py-2">{{ $subject->units }}</p>
+                                    <span class="badge bg-light text-dark border ms-3 py-2">{{ $subject->units }} {{ $subject->units > 1 ? 'units' : 'unit' }}</span>
                                 </td>
                                 <td>
-                                    <p class="text-xs font-weight-bold mb-0 px-2 py-2">{{ $subject->course }}</p>
+                                    <span class="text-xs font-weight-bold ps-3 py-3">{{ $subject->course }}</span>
                                 </td>
                                 <td>
-                                    <p class="text-xs font-weight-bold mb-0 px-2 py-2">{{ $subject->year_level }}</p>
+                                    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary-subtle ms-3 py-2">{{ $subject->year_level }}</span>
                                 </td>
-                                <td class="px-2 py-2">
-                                    <button class="btn btn-info btn-sm rounded-1 me-1" 
+                                <td class="ps-3 py-3">
+                                    <button class="btn btn-info btn-sm rounded-pill me-1 shadow-sm" 
                                             onclick="editSubject({{ $subject->id }}, '{{ $subject->code }}', '{{ $subject->name }}', {{ $subject->units }}, '{{ $subject->course }}', '{{ $subject->year_level }}')"
                                             data-bs-toggle="modal" 
                                             data-bs-target="#editSubjectModal">
-                                        <i class="fas fa-edit"></i>
+                                        <i class="fas fa-edit me-1"></i> Edit
                                     </button>
                                     <form action="{{ route('admin.subjects.destroy', $subject->id) }}" method="POST" class="d-inline">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm rounded-1" onclick="return confirm('Are you sure you want to delete this subject?')">
-                                            <i class="fas fa-trash"></i>
+                                        <button type="submit" class="btn btn-danger btn-sm rounded-pill shadow-sm" 
+                                                onclick="return confirm('Are you sure you want to delete this subject?'); showToast('Subject Deleted', 'Subject has been successfully removed', 'danger');">
+                                            <i class="fas fa-trash me-1"></i> Delete
                                         </button>
                                     </form>
                                 </td>
                             </tr>
-                            @endforeach
+                            @empty
+                            <tr>
+                                <td colspan="6" class="text-center py-4">
+                                    <div class="d-flex flex-column align-items-center">
+                                        <i class="fas fa-database fa-3x text-secondary opacity-50 mb-3"></i>
+                                        <h6 class="text-secondary">No subjects available</h6>
+                                        <p class="text-xs text-secondary">Click on "Add New Subject" to create one</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforelse
                         </tbody>
                     </table>
+                </div>
+                
+                <!-- Pagination with info -->
+                <div class="px-3 py-3">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap">
+                        <div class="text-secondary text-xs mb-2 mb-md-0">
+                            Showing <span class="fw-bold">{{ $subjects->firstItem() ?? 0 }}</span> to 
+                            <span class="fw-bold">{{ $subjects->lastItem() ?? 0 }}</span> of 
+                            <span class="fw-bold">{{ $subjects->total() }}</span> subjects
+                        </div>
+                        <div>
+                            {{ $subjects->links() }}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -251,6 +313,53 @@
         document.getElementById('edit_units').value = units;
         document.getElementById('edit_course').value = course;
         document.getElementById('edit_year_level').value = yearLevel;
+        
+        // Show toast notification
+        showToast('Editing Subject', 'Now editing ' + name + ' (' + code + ')', 'info');
     }
+    
+    function showToast(title, message, type) {
+        const toast = document.getElementById('liveToast');
+        const toastHeader = document.getElementById('toastHeader');
+        const toastTitle = document.getElementById('toastTitle');
+        const toastMessage = document.getElementById('toastMessage');
+        const toastIcon = document.getElementById('toastIcon');
+        
+        // Reset classes
+        toastHeader.className = 'toast-header';
+        toastIcon.className = 'fas me-2';
+        
+        // Set type-specific styles
+        if (type === 'success') {
+            toastHeader.classList.add('bg-success', 'text-white');
+            toastIcon.classList.add('fa-check-circle');
+        } else if (type === 'danger') {
+            toastHeader.classList.add('bg-danger', 'text-white');
+            toastIcon.classList.add('fa-exclamation-circle');
+        } else if (type === 'info') {
+            toastHeader.classList.add('bg-info', 'text-white');
+            toastIcon.classList.add('fa-info-circle');
+        } else if (type === 'warning') {
+            toastHeader.classList.add('bg-warning');
+            toastIcon.classList.add('fa-exclamation-triangle');
+        }
+        
+        toastTitle.innerText = title;
+        toastMessage.innerText = message;
+        
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+    }
+    
+    // Show toast for actions based on session messages
+    document.addEventListener('DOMContentLoaded', function() {
+        @if(session('success'))
+            showToast('Success', '{{ session('success') }}', 'success');
+        @endif
+        
+        @if(session('error'))
+            showToast('Error', '{{ session('error') }}', 'danger');
+        @endif
+    });
 </script>
 @endpush

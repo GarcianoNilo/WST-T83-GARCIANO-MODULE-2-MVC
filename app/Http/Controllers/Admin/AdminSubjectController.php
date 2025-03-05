@@ -10,7 +10,7 @@ class AdminSubjectController extends Controller
 {
     public function index()
     {
-        $subjects = Subject::all();
+        $subjects = Subject::paginate(8);
         return view('admin.subjects.index', compact('subjects'));
     }
 
@@ -53,4 +53,4 @@ class AdminSubjectController extends Controller
         return redirect()->route('admin.subjects.index')
             ->with('success', 'Subject deleted successfully');
     }
-} 
+}

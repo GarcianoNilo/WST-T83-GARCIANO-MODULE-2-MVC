@@ -11,8 +11,15 @@ class AdminStudentController extends Controller
 {
     public function index()
     {
-        $students = User::where('role', 'student')->get();
-        return view('admin.students.index', compact('students'));
+        $enrolledStudents = User::where('role', 'student')
+                               ->where('is_enrolled', true)
+                               ->paginate(8, ['*'], 'enrolled');
+                               
+        $unenrolledStudents = User::where('role', 'student')
+                                 ->where('is_enrolled', false)
+                                 ->paginate(8, ['*'], 'unenrolled');
+                                 
+        return view('admin.students.index', compact('enrolledStudents', 'unenrolledStudents'));
     }
 
     public function store(Request $request)
@@ -29,6 +36,7 @@ class AdminStudentController extends Controller
         $data = $request->all();
         $data['role'] = 'student';
         $data['is_enrolled'] = false;
+        $data['password'] = Hash::make($data['password']);
 
         User::create($data);
         return redirect()->route('admin.students.index')
@@ -59,4 +67,4 @@ class AdminStudentController extends Controller
         $student->delete();
         return redirect()->route('admin.students.index')->with('success', 'Student deleted successfully');
     }
-} 
+}

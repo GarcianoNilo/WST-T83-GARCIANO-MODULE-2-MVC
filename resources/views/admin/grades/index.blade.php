@@ -3,18 +3,33 @@
 @section('title', 'Manage Grades')
 
 @section('content')
+<!-- Toast Notification System -->
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 1080">
+    <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header" id="toastHeader">
+            <i class="fas fa-info-circle me-2" id="toastIcon"></i>
+            <strong class="me-auto" id="toastTitle">Notification</strong>
+            <small>Just now</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toastMessage">
+            Action completed successfully
+        </div>
+    </div>
+</div>
+
 <!-- Alert Messages -->
 @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <span class="alert-icon"><i class="fas fa-check-circle"></i></span>
+    <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+        <span class="alert-icon"><i class="fas fa-check-circle me-2"></i></span>
         <span class="alert-text">{{ session('success') }}</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 @endif
 
 @if(session('error'))
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <span class="alert-icon"><i class="fas fa-exclamation-circle"></i></span>
+    <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+        <span class="alert-icon"><i class="fas fa-exclamation-circle me-2"></i></span>
         <span class="alert-text">{{ session('error') }}</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
@@ -27,7 +42,7 @@
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content border-0 shadow-lg">
                     <div class="modal-header bg-light">
-                        <h5 class="modal-title fw-bold"><i class="fas fa-graduation-cap text-success me-2"></i>Add New Grade</h5>
+                        <h5 class="modal-title fw-bold"><i class="fas fa-graduation-cap text-primary me-2"></i>Add New Grade</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <form action="{{ route('admin.grades.store') }}" method="POST">
@@ -123,7 +138,7 @@
                         </div>
                         <div class="modal-footer bg-light">
                             <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-success px-4">Add Grade</button>
+                            <button type="submit" class="btn btn-primary px-4">Add Grade</button>
                         </div>
                     </form>
                 </div>
@@ -135,7 +150,7 @@
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content border-0 shadow-lg">
                     <div class="modal-header bg-light">
-                        <h5 class="modal-title fw-bold"><i class="fas fa-edit text-info me-2"></i>Edit Grade</h5>
+                        <h5 class="modal-title fw-bold"><i class="fas fa-edit text-primary me-2"></i>Edit Grade</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <form id="editGradeForm" method="POST">
@@ -187,7 +202,7 @@
                         </div>
                         <div class="modal-footer bg-light">
                             <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-info px-4">Update Grade</button>
+                            <button type="submit" class="btn btn-primary px-4">Update Grade</button>
                         </div>
                     </form>
                 </div>
@@ -195,97 +210,120 @@
         </div>
 
         <!-- Main Content -->
-        <div class="card mb-4 shadow-sm">
-            <div class="card-header pb-0 d-flex justify-content-between align-items-center">
-                <h6 class="mb-0 py-1">Student Grades</h6>
-                <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addGradeModal">
-                    <i class="fas fa-plus me-1"></i> Add New Grade
-                </button>
+        <div class="card mb-4 shadow-sm border-0 rounded-3">
+            <div class="card-header pb-0 bg-white">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h6 class="mb-0 text-primary fw-bold py-1">
+                            <i class="fas fa-graduation-cap me-2"></i>Grades Management
+                        </h6>
+                    </div>
+                    <div class="col text-end">
+                        <button class="btn btn-primary btn-sm rounded-pill shadow-sm" data-bs-toggle="modal" data-bs-target="#addGradeModal">
+                            <i class="fas fa-plus-circle me-1"></i> Add New Grade
+                        </button>
+                    </div>
+                </div>
             </div>
-            <div class="card-body px-0 pt-0 pb-2">
+            <div class="card-body px-0 pt-3 pb-2">
                 <div class="table-responsive p-0">
                     <table class="table align-items-center mb-0">
                         <thead>
                             <tr>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Student ID</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Student Name</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Subject</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Grade</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Remarks</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Academic Year</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Semester</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Actions</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-3">Student</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-3">Subject</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-3">Grade</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-3">Remarks</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-3">Academic Details</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-3">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($grades as $grade)
+                            @forelse($grades as $grade)
                             <tr>
                                 <td>
-                                    <p class="text-xs font-weight-bold mb-0 px-2 py-2">{{ $grade->enrollment->student->student_id }}</p>
-                                </td>
-                                <td>
-                                    <div class="d-flex px-2 py-2">
+                                    <div class="d-flex px-3 py-2">
                                         <div class="d-flex flex-column justify-content-center">
                                             <h6 class="mb-0 text-sm">{{ $grade->enrollment->student->name }}</h6>
+                                            <p class="text-xs text-secondary mb-0">ID: {{ $grade->enrollment->student->student_id }}</p>
                                         </div>
                                     </div>
                                 </td>
                                 <td>
-                                    <p class="text-xs font-weight-bold mb-0 px-2 py-2">{{ $grade->enrollment->subject->code }} - {{ $grade->enrollment->subject->name }}</p>
+                                    <div class="d-flex flex-column px-3 py-2">
+                                        <h6 class="mb-0 text-sm">{{ $grade->enrollment->subject->name }}</h6>
+                                        <p class="text-xs text-secondary mb-0">{{ $grade->enrollment->subject->code }}</p>
+                                    </div>
                                 </td>
-                                <td>
+                                <td class="px-3 py-2">
                                     @php
                                         $badgeClass = 'bg-success';
-                                        $icon = 'fas fa-check-circle';
-                                        
-                                        if ($grade->final_grade > 3.0 && $grade->final_grade < 5.0) {
-                                            $badgeClass = 'bg-warning';
-                                            $icon = 'fas fa-exclamation-circle';
-                                        } elseif ($grade->final_grade == 5.0) {
+                                        if ($grade->final_grade == '5.00') {
                                             $badgeClass = 'bg-danger';
-                                            $icon = 'fas fa-times-circle';
                                         } elseif ($grade->final_grade == 'INC') {
-                                            $badgeClass = 'bg-info';
-                                            $icon = 'fas fa-clock';
+                                            $badgeClass = 'bg-warning';
                                         } elseif ($grade->final_grade == 'DRP') {
                                             $badgeClass = 'bg-secondary';
-                                            $icon = 'fas fa-minus-circle';
                                         }
                                     @endphp
-                                    <span class="badge {{ $badgeClass }} text-white">
-                                        <i class="{{ $icon }} me-1"></i> {{ $grade->final_grade }}
+                                    <span class="badge {{ $badgeClass }} bg-opacity-10 text-{{ str_replace('bg-', '', $badgeClass) }} border border-{{ str_replace('bg-', '', $badgeClass) }}-subtle py-2 px-2">
+                                        {{ $grade->final_grade }}
                                     </span>
                                 </td>
-                                <td>
-                                    <p class="text-xs font-weight-bold mb-0 px-2 py-2">{{ $grade->remarks }}</p>
+                                <td class="px-3 py-2">
+                                    <span class="badge bg-{{ $grade->remarks == 'Failed' ? 'danger' : ($grade->remarks == 'Incomplete' || $grade->remarks == 'Dropped' ? 'warning' : 'success') }}-subtle text-{{ $grade->remarks == 'Failed' ? 'danger' : ($grade->remarks == 'Incomplete' || $grade->remarks == 'Dropped' ? 'warning' : 'success') }} py-2">
+                                        {{ $grade->remarks }}
+                                    </span>
                                 </td>
-                                <td>
-                                    <p class="text-xs font-weight-bold mb-0 px-2 py-2">{{ $grade->academic_year }}</p>
+                                <td class="px-3 py-2">
+                                    <small class="text-xs text-secondary">
+                                        {{ $grade->enrollment->academic_year }} · {{ $grade->enrollment->semester }} Semester
+                                    </small>
                                 </td>
-                                <td>
-                                    <p class="text-xs font-weight-bold mb-0 px-2 py-2">{{ $grade->semester }}</p>
-                                </td>
-                                <td class="align-middle px-2 py-2">
-                                    <div class="d-flex">
-                                        <button class="btn btn-info btn-sm px-2 me-2 rounded-1"
-                                                onclick="editGrade({{ $grade->id }})"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#editGradeModal">
-                                            <i class="fas fa-edit"></i>
+                                <td class="px-3 py-2">
+                                    <button class="btn btn-info btn-sm rounded-pill me-1 shadow-sm" 
+                                            onclick="editGrade({{ $grade->id }})"
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#editGradeModal">
+                                        <i class="fas fa-edit me-1"></i> Edit
+                                    </button>
+                                    <form action="{{ route('admin.grades.destroy', $grade->id) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm rounded-pill shadow-sm" 
+                                                onclick="return confirm('Are you sure you want to delete this grade?'); showToast('Grade Deleted', 'Grade has been successfully removed', 'danger');">
+                                            <i class="fas fa-trash me-1"></i> Delete
                                         </button>
-                                        <form action="{{ route('admin.grades.destroy', $grade->id) }}" method="POST" class="d-inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm px-2 rounded-1" onclick="return confirm('Are you sure you want to delete this grade?')">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </form>
+                                    </form>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="6" class="text-center py-4">
+                                    <div class="d-flex flex-column align-items-center">
+                                        <i class="fas fa-graduation-cap fa-3x text-secondary opacity-50 mb-3"></i>
+                                        <h6 class="text-secondary">No grades available</h6>
+                                        <p class="text-xs text-secondary">Click on "Add New Grade" to create one</p>
                                     </div>
                                 </td>
                             </tr>
-                            @endforeach
+                            @endforelse
                         </tbody>
                     </table>
+                </div>
+                
+                <!-- Pagination with info -->
+                <div class="px-3 py-3">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap">
+                        <div class="text-secondary text-xs mb-2 mb-md-0">
+                            Showing <span class="fw-bold">{{ $grades->firstItem() ?? 0 }}</span> to 
+                            <span class="fw-bold">{{ $grades->lastItem() ?? 0 }}</span> of 
+                            <span class="fw-bold">{{ $grades->total() }}</span> grades
+                        </div>
+                        <div>
+                            {{ $grades->links() }}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

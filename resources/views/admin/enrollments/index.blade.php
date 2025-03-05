@@ -3,17 +3,34 @@
 @section('title', 'Manage Enrollments')
 
 @section('content')
-<!-- Add error/success messages -->
+<!-- Toast Notification System -->
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 1080">
+    <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header" id="toastHeader">
+            <i class="fas fa-info-circle me-2" id="toastIcon"></i>
+            <strong class="me-auto" id="toastTitle">Notification</strong>
+            <small>Just now</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toastMessage">
+            Action completed successfully
+        </div>
+    </div>
+</div>
+
+<!-- Alert Messages -->
 @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        {{ session('success') }}
+    <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+        <span class="alert-icon"><i class="fas fa-check-circle me-2"></i></span>
+        <span class="alert-text">{{ session('success') }}</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 @endif
 
 @if(session('error'))
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        {{ session('error') }}
+    <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+        <span class="alert-icon"><i class="fas fa-exclamation-circle me-2"></i></span>
+        <span class="alert-text">{{ session('error') }}</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 @endif
@@ -25,7 +42,7 @@
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content border-0 shadow-lg">
                     <div class="modal-header bg-light">
-                        <h5 class="modal-title fw-bold"><i class="fas fa-user-plus text-success me-2"></i>Add New Enrollment</h5>
+                        <h5 class="modal-title fw-bold"><i class="fas fa-user-plus text-primary me-2"></i>Add New Enrollment</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <form action="{{ route('admin.enrollments.store') }}" method="POST">
@@ -96,7 +113,7 @@
                         </div>
                         <div class="modal-footer bg-light">
                             <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-success px-4">Enroll Student</button>
+                            <button type="submit" class="btn btn-primary px-4">Enroll Student</button>
                         </div>
                     </form>
                 </div>
@@ -104,61 +121,101 @@
         </div>
 
         <!-- Main Content -->
-        <div class="card mb-4 shadow-sm">
-            <div class="card-header pb-0 d-flex justify-content-between align-items-center">
-                <h6 class="mb-0 py-1">Manage Enrollments</h6>
-                <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addEnrollmentModal">
-                    <i class="fas fa-plus me-1"></i> Add New Enrollment
-                </button>
+        <div class="card mb-4 shadow-sm border-0 rounded-3">
+            <div class="card-header pb-0 bg-white">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h6 class="mb-0 text-primary fw-bold py-1">
+                            <i class="fas fa-user-graduate me-2"></i>Enrollment Management
+                        </h6>
+                    </div>
+                    <div class="col text-end">
+                        <button class="btn btn-primary btn-sm rounded-pill shadow-sm" data-bs-toggle="modal" data-bs-target="#addEnrollmentModal">
+                            <i class="fas fa-plus-circle me-1"></i> Add New Enrollment
+                        </button>
+                    </div>
+                </div>
             </div>
-            <div class="card-body px-0 pt-0 pb-2">
+            
+            <div class="card-body px-0 pt-3 pb-2">
                 <div class="table-responsive p-0">
                     <table class="table align-items-center mb-0">
                         <thead>
                             <tr>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Student ID</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Student Name</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Subject</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Academic Year</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Semester</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Actions</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-3">Student ID</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-3">Student Name</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-3">Subject</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-3">Academic Year</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-3">Semester</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-3">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($enrollments as $enrollment)
+                            @forelse($enrollments as $enrollment)
                             <tr>
                                 <td>
-                                    <p class="text-xs font-weight-bold mb-0 px-2 py-2">{{ $enrollment->student->student_id }}</p>
+                                    <p class="text-sm font-weight-bold mb-0 ps-3">{{ $enrollment->student->student_id }}</p>
                                 </td>
                                 <td>
-                                    <div class="d-flex px-2 py-2">
+                                    <div class="d-flex px-2 py-1">
                                         <div class="d-flex flex-column justify-content-center">
                                             <h6 class="mb-0 text-sm">{{ $enrollment->student->name }}</h6>
+                                            <p class="text-xs text-secondary mb-0">{{ $enrollment->student->course }} - Year {{ $enrollment->student->year_level }}</p>
                                         </div>
                                     </div>
                                 </td>
                                 <td>
-                                    <p class="text-xs font-weight-bold mb-0 px-2 py-2">{{ $enrollment->subject->code }} - {{ $enrollment->subject->name }}</p>
+                                    <div class="d-flex flex-column ps-3">
+                                        <h6 class="mb-0 text-sm">{{ $enrollment->subject->code }}</h6>
+                                        <p class="text-xs text-secondary mb-0">{{ $enrollment->subject->name }}</p>
+                                    </div>
                                 </td>
                                 <td>
-                                    <p class="text-xs font-weight-bold mb-0 px-2 py-2">{{ $enrollment->academic_year }}</p>
+                                    <p class="text-sm font-weight-bold mb-0 ps-3">{{ $enrollment->academic_year }}</p>
                                 </td>
                                 <td>
-                                    <p class="text-xs font-weight-bold mb-0 px-2 py-2">{{ $enrollment->semester }}</p>
+                                    <span class="badge bg-{{ $enrollment->semester == '1st' ? 'info' : 'primary' }}-subtle text-{{ $enrollment->semester == '1st' ? 'info' : 'primary' }} py-2">
+                                        {{ $enrollment->semester }} Semester
+                                    </span>
                                 </td>
-                                <td class="align-middle px-2 py-2">
+                                <td class="align-middle">
                                     <form action="{{ route('admin.enrollments.destroy', $enrollment->id) }}" method="POST" class="d-inline">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm rounded-1" onclick="return confirm('Are you sure you want to cancel this enrollment?')">
-                                            <i class="fas fa-trash"></i>
+                                        <button type="submit" class="btn btn-danger btn-sm rounded-pill shadow-sm" 
+                                            onclick="return confirm('Are you sure you want to cancel this enrollment?'); showToast('Enrollment Cancelled', 'Enrollment has been successfully cancelled', 'danger');">
+                                            <i class="fas fa-trash me-1"></i> Cancel
                                         </button>
                                     </form>
                                 </td>
                             </tr>
-                            @endforeach
+                            @empty
+                            <tr>
+                                <td colspan="6" class="text-center py-4">
+                                    <div class="d-flex flex-column align-items-center">
+                                        <i class="fas fa-user-graduate fa-3x text-secondary opacity-50 mb-3"></i>
+                                        <h6 class="text-secondary">No enrollments available</h6>
+                                        <p class="text-xs text-secondary">Click on "Add New Enrollment" to create one</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforelse
                         </tbody>
                     </table>
+                </div>
+                
+                <!-- Pagination with info -->
+                <div class="px-3 py-3">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap">
+                        <div class="text-secondary text-xs mb-2 mb-md-0">
+                            Showing <span class="fw-bold">{{ $enrollments->firstItem() ?? 0 }}</span> to 
+                            <span class="fw-bold">{{ $enrollments->lastItem() ?? 0 }}</span> of 
+                            <span class="fw-bold">{{ $enrollments->total() }}</span> enrollments
+                        </div>
+                        <div>
+                            {{ $enrollments->links() }}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -168,6 +225,39 @@
 
 @push('scripts')
 <script>
+    // Show toast notification function
+    function showToast(title, message, type) {
+        const toastEl = document.getElementById('liveToast');
+        const toastHeader = document.getElementById('toastHeader');
+        const toastTitle = document.getElementById('toastTitle');
+        const toastMessage = document.getElementById('toastMessage');
+        const toastIcon = document.getElementById('toastIcon');
+        
+        // Set toast content
+        toastTitle.textContent = title;
+        toastMessage.textContent = message;
+        
+        // Set toast type/color
+        toastHeader.className = 'toast-header';
+        if (type === 'success') {
+            toastHeader.classList.add('bg-success', 'text-white');
+            toastIcon.className = 'fas fa-check-circle me-2';
+        } else if (type === 'danger') {
+            toastHeader.classList.add('bg-danger', 'text-white');
+            toastIcon.className = 'fas fa-exclamation-circle me-2';
+        } else if (type === 'warning') {
+            toastHeader.classList.add('bg-warning', 'text-white');
+            toastIcon.className = 'fas fa-exclamation-triangle me-2';
+        } else {
+            toastHeader.classList.add('bg-primary', 'text-white');
+            toastIcon.className = 'fas fa-info-circle me-2';
+        }
+        
+        // Show toast
+        const toast = new bootstrap.Toast(toastEl);
+        toast.show();
+    }
+
     // Set current academic year and semester automatically
     document.addEventListener('DOMContentLoaded', function() {
         // Auto-determine current academic year and semester

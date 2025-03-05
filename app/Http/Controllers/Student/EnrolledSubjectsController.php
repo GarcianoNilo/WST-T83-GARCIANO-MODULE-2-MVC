@@ -67,5 +67,6 @@ class EnrolledSubjectsController extends Controller
             'totalUnits',
             'instructors'
         ));
+        
     }
 }

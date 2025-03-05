@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Admin\AdminStudentController;
 use App\Http\Controllers\Admin\AdminSubjectController;
 use App\Http\Controllers\Admin\AdminEnrollmentController;
@@ -15,8 +16,13 @@ Route::get('/', function () {
     return view('auth/login');
 })->name('home');
 
-// Admin Routes
-Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
+// Test route to verify routing is working
+Route::get('/test', function () {
+    return 'Route system is working!';
+});
+
+// Admin Routes - Protected by admin role middleware
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/students', [AdminStudentController::class, 'index'])->name('students.index');
@@ -47,23 +53,29 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::get('search-subjects/{searchTerm}', [AdminEnrollmentController::class, 'searchSubjects']);
     Route::get('search-subjects/{searchTerm}/{studentId}', [AdminGradeController::class, 'getSubjectsByStudent']);
     Route::get('/enrollments/search', [AdminEnrollmentController::class, 'search'])->name('enrollments.search');
-    Route::get('/admin/search-subjects-by-course/{term}/{course}', 'AdminController@searchSubjectsByCourse');
+    Route::get('/search-subjects-by-course/{term}/{course}', [AdminEnrollmentController::class, 'searchSubjectsByCourse']);
 });
 
-// Student Routes
-Route::middleware(['auth', 'verified'])->group(function () {
+// Student Routes - Protected by student role middleware
+Route::middleware(['auth', 'role:student'])->group(function () {
     Route::get('/dashboard', [StudentDashboardController::class, 'index'])->name('dashboard');
-    
     Route::get('/grades', [StudentGradesController::class, 'index'])->name('grades');
-    
     Route::get('/enrolled-subjects', [EnrolledSubjectsController::class, 'index'])->name('enrolledSubjects');
 });
 
-// Common Routes
+// Common Routes - Available to authenticated users regardless of role
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+// Add a route for redirecting users based on their role after login
+Route::middleware(['auth'])->get('/redirect', function () {
+    if (Auth::user()->role === 'admin') {
+        return redirect()->route('admin.dashboard');
+    }
+    return redirect()->route('dashboard');
+})->name('redirect');
 
 require __DIR__.'/auth.php';

@@ -17,7 +17,7 @@ class AdminGradeController extends Controller
      */
     public function index()
     {
-        $grades = Grade::with(['enrollment.student', 'enrollment.subject'])->get();
+        $grades = Grade::with(['enrollment.student', 'enrollment.subject'])->paginate(8);
         return view('admin.grades.index', compact('grades'));
     }
 
